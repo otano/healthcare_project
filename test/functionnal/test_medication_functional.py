@@ -4,6 +4,28 @@ from src.medication import Medication
 
 @pytest.mark.functional
 class TestMedicationFunctional:
+    def test_get_active_medications_functional(self):
+        """Test fonctionnel: récupération des médicaments actifs"""
+        medication_mgr = Medication()
+        patient_id = 103
+        # Aucun médicament actif au départ
+        assert medication_mgr.get_active_medications(patient_id) == []
+        # Ajout de deux prescriptions
+        medication_mgr.prescribe_medication(patient_id, "Amlodipine", "5mg", "1x/jour")
+        medication_mgr.prescribe_medication(
+            patient_id, "Simvastatin", "20mg", "1x/jour"
+        )
+        actives = medication_mgr.get_active_medications(patient_id)
+        assert len(actives) == 2
+        names = [med["name"] for med in actives]
+        assert "Amlodipine" in names
+        assert "Simvastatin" in names
+        # On arrête un médicament
+        medication_mgr.stop_medication(patient_id, "Amlodipine")
+        actives2 = medication_mgr.get_active_medications(patient_id)
+        assert len(actives2) == 1
+        assert actives2[0]["name"] == "Simvastatin"
+
     def test_stop_medication_functional(self):
         """Test fonctionnel: arrêt d'un médicament pour un patient"""
         medication_mgr = Medication()
