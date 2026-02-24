@@ -4,7 +4,6 @@ from src.medication import Medication
 
 @pytest.mark.unit
 class TestMedicationUnit:
-
     @pytest.fixture
     def medication_mgr(self):
         return Medication()
@@ -73,3 +72,24 @@ class TestMedicationUnit:
         # Arrêt d'un médicament non prescrit
         result2 = medication_mgr.stop_medication(patient_id, "NonExistant")
         assert result2 is False
+
+    def test_get_active_medications(self, medication_mgr):
+        """Test: récupération des médicaments actifs"""
+        patient_id = 50
+        # Aucun médicament actif au départ
+        assert medication_mgr.get_active_medications(patient_id) == []
+        # Ajout de deux prescriptions
+        medication_mgr.prescribe_medication(patient_id, "Amlodipine", "5mg", "1x/jour")
+        medication_mgr.prescribe_medication(
+            patient_id, "Simvastatin", "20mg", "1x/jour"
+        )
+        actives = medication_mgr.get_active_medications(patient_id)
+        assert len(actives) == 2
+        names = [med["name"] for med in actives]
+        assert "Amlodipine" in names
+        assert "Simvastatin" in names
+        # On arrête un médicament
+        medication_mgr.stop_medication(patient_id, "Amlodipine")
+        actives2 = medication_mgr.get_active_medications(patient_id)
+        assert len(actives2) == 1
+        assert actives2[0]["name"] == "Simvastatin"
