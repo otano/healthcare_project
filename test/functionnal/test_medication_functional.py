@@ -4,6 +4,20 @@ from src.medication import Medication
 
 @pytest.mark.functional
 class TestMedicationFunctional:
+    def test_get_medication_history_functional(self):
+        """Test fonctionnel: récupération de l'historique des prescriptions"""
+        medication_mgr = Medication()
+        patient_id = 101
+        # Historique vide au départ
+        assert medication_mgr.get_medication_history(patient_id) == []
+        # Ajout d'une prescription
+        medication_mgr.prescribe_medication(patient_id, "Ibuprofen", "200mg", "1x/jour")
+        history = medication_mgr.get_medication_history(patient_id)
+        assert len(history) == 1
+        assert history[0]["name"] == "Ibuprofen"
+        assert history[0]["dosage"] == "200mg"
+        assert history[0]["frequency"] == "1x/jour"
+        assert history[0]["status"] == "active"
 
     def test_prescribe_medication_functional(self):
         """Test fonctionnel: prescription d'un médicament sans interaction"""
