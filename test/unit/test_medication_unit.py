@@ -4,8 +4,6 @@ from src.medication import Medication
 
 @pytest.mark.unit
 class TestMedicationUnit:
-    """Test individual Patient methods in isolation"""
-
     @pytest.fixture
     def medication_mgr(self):
         return Medication()
@@ -43,3 +41,19 @@ class TestMedicationUnit:
         assert len(history) == 2
         assert history[1]["name"] == "Lisinopril"
         assert history[1]["status"] == "active"
+
+    def test_get_medication_history(self, medication_mgr):
+        """Test: récupération de l'historique des prescriptions"""
+        patient_id = 30
+        # Historique vide au départ
+        assert medication_mgr.get_medication_history(patient_id) == []
+        # Ajout d'une prescription
+        medication_mgr.prescribe_medication(patient_id, "Ibuprofen", "200mg", "1x/jour")
+        history = medication_mgr.get_medication_history(patient_id)
+        assert len(history) == 1
+        assert history[0]["name"] == "Ibuprofen"
+        assert history[0]["dosage"] == "200mg"
+        assert history[0]["frequency"] == "1x/jour"
+        assert history[0]["status"] == "active"
+
+    """Test individual Patient methods in isolation"""
